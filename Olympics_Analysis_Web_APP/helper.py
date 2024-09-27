@@ -1,5 +1,6 @@
 import numpy as np
 
+# Showing the table view!
 
 def fetch_medal_tally(df, year, country):
     medal_df = df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'])
