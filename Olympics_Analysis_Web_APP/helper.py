@@ -52,3 +52,11 @@ def country_year_list(df):
     country.insert(0, 'Overall')
 
     return years, country
+
+def data_over_time(df, col):
+
+    nations_over_time = df.drop_duplicates(['Year', col])['Year'].value_counts().reset_index()
+    nations_over_time.columns = ['Year', col] # Rename the columns for clarity
+    nations_over_time = nations_over_time.sort_values('Year')
+    return nations_over_time
+
