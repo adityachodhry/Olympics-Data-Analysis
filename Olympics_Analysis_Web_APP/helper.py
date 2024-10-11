@@ -60,3 +60,16 @@ def data_over_time(df, col):
     nations_over_time = nations_over_time.sort_values('Year')
     return nations_over_time
 
+def most_successful(df, Sport):
+    temp_df = df.dropna(subset=['Medal'])
+    if Sport != 'Overall':
+        temp_df = temp_df[temp_df['Sport'] == Sport]
+    
+    successful_athletes = temp_df['Name'].value_counts().reset_index().head(15)
+    
+    # Rename the columns so that 'index' becomes 'Name'
+    successful_athletes.columns = ['Name', 'Medal_Count']
+
+    # Merge with the original DataFrame to get additional information
+    x = successful_athletes.merge(df, on='Name', how='left')[['Name', 'Medal_Count', 'Sport', 'region']].drop_duplicates(subset='Name')
+    return x
