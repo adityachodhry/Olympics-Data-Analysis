@@ -41,7 +41,6 @@ def medal_telly(df):
 
     return medal_telly
 
-
 def country_year_list(df):
     years = df['Year'].unique().tolist()
     years.sort()
@@ -62,14 +61,54 @@ def data_over_time(df, col):
 
 def most_successful(df, Sport):
     temp_df = df.dropna(subset=['Medal'])
-    if Sport != 'Overall':
+    if Sport != 'Overall': 
         temp_df = temp_df[temp_df['Sport'] == Sport]
     
     successful_athletes = temp_df['Name'].value_counts().reset_index().head(15)
     
     # Rename the columns so that 'index' becomes 'Name'
-    successful_athletes.columns = ['Name', 'Medal_Count']
+    successful_athletes.columns = ['Name', 'Medal Count']
 
     # Merge with the original DataFrame to get additional information
-    x = successful_athletes.merge(df, on='Name', how='left')[['Name', 'Medal_Count', 'Sport', 'region']].drop_duplicates(subset='Name')
+    x = successful_athletes.merge(df, on='Name', how='left')[['Name', 'Medal Count', 'Sport', 'region']].drop_duplicates(subset='Name')
     return x
+
+def yearwise_medal_tally(df,country):
+    temp_df = df.dropna(subset=['Medal'])
+    temp_df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'], inplace=True)
+
+    new_df = temp_df[temp_df['region'] == country]
+    final_df = new_df.groupby('Year').count()['Medal'].reset_index()
+
+    return final_df
+
+def country_event_heatmap(df, country):
+    temp_df = df.dropna(subset=['Medal'])
+    temp_df.drop_duplicates(subset=['Team', 'NOC', 'Games', 'Year', 'City', 'Sport', 'Event', 'Medal'], inplace=True)
+
+    new_df = temp_df[temp_df['region'] == country]
+    pt = new_df.pivot_table(index = 'Sport', columns = 'Year', values = 'Medal', aggfunc = 'count').fillna(0)
+
+    return pt
+
+def most_successful_countrywise(df, country):
+    temp_df = df.dropna(subset=['Medal'])
+    temp_df = temp_df[temp_df['region'] == country]
+    
+    successful_athletes = temp_df['Name'].value_counts().reset_index().head(15)
+    
+    # Rename the columns so that 'index' becomes 'Name'
+    successful_athletes.columns = ['Name', 'Medal Count']
+
+    # Merge with the original DataFrame to get additional information
+    x = successful_athletes.merge(df, on='Name', how='left')[['Name', 'Medal Count', 'Sport']].drop_duplicates(subset='Name')
+    return x
+
+def weight_v_height(df,sport):
+    athlete_df = df.drop_duplicates(subset=['Name', 'region'])
+    athlete_df['Medal'].fillna('No Medal', inplace=True)
+    if sport != 'Overall':
+        temp_df = athlete_df[athlete_df['Sport'] == sport]
+        return temp_df
+    else:
+        return athlete_df
